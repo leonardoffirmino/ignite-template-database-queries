@@ -14,18 +14,15 @@ export class UsersRepository implements IUsersRepository {
   async findUserWithGamesById({
     user_id,
   }: IFindUserWithGamesDTO): Promise<User> {
-    const id = user_id;
+    const users = (await this.repository.findOne(user_id, {
+      relations: ["games"],
+    })) as User;
 
-    const user = await this.repository.createQueryBuilder("users")
-      .leftJoinAndSelect("users.games", "games")
-      .where("users.id = :id", { id: `${user_id}` })
-      .getOne();
-
-    if (!user) {
-      throw new Error("User not exists !!")
+    if (!users) {
+      throw new Error("User not exists!");
     }
 
-    return user;
+    return users;
 
   }
 
